@@ -88,7 +88,7 @@ namespace NewsStacks.Service
             
             }
 
-            public async Task<dynamic> Update(Article article)
+            public async Task<Article> Update(Article article)
             {
                 //var objUser = dbContext.Users.Where(x => x.Userid == user.Userid).FirstOrDefault();
                 if (_dbContext.Articles.Where(x => x.Articleid == article.Articleid && x.Isdeleted == false).Any())
@@ -101,6 +101,25 @@ namespace NewsStacks.Service
 
                     _dbContext.Entry(article).State = EntityState.Modified;
                     _dbContext.SaveChanges();
+
+                    
+                    
+                article.Tags.ToList().ForEach(x =>
+                {
+                    x.Lastmodifieddate = DateTime.UtcNow;
+                    if (x.Tagid != 0)
+                    {
+                        _dbContext.Entry(x).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        x.Articleid = article.Articleid;
+                        _dbContext.Tags.Add(x);
+                    }
+                });
+
+                _dbContext.SaveChanges();
+
                     return await System.Threading.Tasks.Task.FromResult(article);
                 }
                 else
@@ -116,6 +135,16 @@ namespace NewsStacks.Service
                     article.Isdeleted = true;
                     _dbContext.Entry(article).State = EntityState.Modified;
                     _dbContext.SaveChanges();
+
+                var tags = _dbContext.Tags.Where(x => x.Articleid == objArticle.id).ToList();
+
+                tags.ForEach(x =>
+                {
+                    _dbContext.Entry(x).State = EntityState.Deleted;
+                });
+
+                _dbContext.SaveChanges();
+
                     return await System.Threading.Tasks.Task.FromResult(objArticle.id);
                 }
                 else

@@ -50,7 +50,7 @@ namespace NewsStacks.Controllers
         [Authorize(Roles = "WRITER")]
         [HttpPut]
         [Route("{articleId}")]
-        public Task<dynamic> Update(Article article)
+        public Task<Article> Update(Article article)
         {
             var result = _articleService.Update(article: article).Result;
             return Task.FromResult(result);

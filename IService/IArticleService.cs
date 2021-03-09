@@ -15,7 +15,7 @@ namespace NewsStacks.IService
 
         Task<dynamic> Create(Article article);
 
-        Task<dynamic> Update(Article article);
+        Task<Article> Update(Article article);
 
         Task<int> Delete(DeleteRequest objArticle);
 
