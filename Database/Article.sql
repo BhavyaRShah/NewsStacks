@@ -1,0 +1,15 @@
+create table article(
+	articleid int not null identity primary key,
+	headline varchar(100) not null,
+	content varchar(max) not null,
+	createddate datetime not null,
+	createdbyid int not null,
+	submitteddate datetime null,
+	submittedtoid int null,
+	publisheddate datetime null,
+	publishedbyid int null,
+	lastmodifieddate datetime not null,
+	isdeleted bit not null,
+	constraint fk_article_createdbyid foreign key (createdbyid) references userdetail(userdetailid),
+	constraint fk_article_submittedtoid foreign key (submittedtoid) references userdetail(userdetailid),
+	constraint fk_article_publishedbyid foreign key (publishedbyid) references userdetail(userdetailid))
