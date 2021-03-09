@@ -159,12 +159,6 @@ namespace NewsStacks.Model
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("userpassword");
-
-                //entity.HasOne(d => d.Timezone)
-                //    .WithMany(p => p.Userdetails)
-                //    .HasForeignKey(d => d.Timezoneid)
-                //    .OnDelete(DeleteBehavior.ClientSetNull)
-                //    .HasConstraintName("fk_userdetail_timezoneid");
             });
 
             OnModelCreatingPartial(modelBuilder);
