@@ -38,14 +38,19 @@ namespace NewsStacks.Service
             
         }
 
+       //the search parameter can be used to search the articles by tag
         public async Task<List<Article>> GetList(string search = "")
         {
             //get the user from the session and assign that user in createdbyid
             string userRole = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
             int userId = Convert.ToInt32(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+            //if userrole is publisher, then get all the articles that are published and those which are submitted to that publisher
+            //if userrole is writer, then get all the articles that are published and those which are created by that writer
+            //if userrole is user, then get only the published articles
             var articles = _dbContext.Articles.Where(x => x.Isdeleted == false && 
-                                (userRole == USERROLES.PUBLISHER.ToString() ? x.Submittedtoid == userId || (x.Publishedbyid != null && x.Publisheddate != null) : (userRole == USERROLES.WRITER.ToString() ? x.Createdbyid == userId || (x.Publishedbyid != null && x.Publisheddate != null) : x.Publishedbyid != null && x.Publisheddate != null)))
+                                (userRole == USERROLES.PUBLISHER.ToString() ? x.Submittedtoid == userId || (x.Publishedbyid != null && x.Publisheddate != null) : (userRole == USERROLES.WRITER.ToString() ? x.Createdbyid == userId || (x.Publishedbyid != null && x.Publisheddate != null) : x.Publishedbyid != null && x.Publisheddate != null)) 
+                                && (!string.IsNullOrEmpty(search) ? x.Tags.Where(y => y.Tagname.Contains(search)).Any() : true ))
                                 .Include(x => x.Tags).Include(x => x.Publishedby).Include(x => x.Submittedto).Include(x => x.Createdby).ToList();
             return await System.Threading.Tasks.Task.FromResult(articles);
         }
